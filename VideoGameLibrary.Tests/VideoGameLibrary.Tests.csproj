@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- net8.0-windows para poder referenciar VideoGameLibrary.csproj (WPF) sin fricción -->
+    <!-- net8.0-windows para poder referenciar VideoGameLibraryLocal.csproj (WPF) sin fricción -->
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoGameLibrary.csproj" />
+    <ProjectReference Include="..\VideoGameLibraryLocal.csproj" />
   </ItemGroup>
 
 </Project>

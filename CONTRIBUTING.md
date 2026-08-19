@@ -6,9 +6,9 @@ entorno, correr los tests y enviar cambios.
 ## Poner el proyecto en marcha
 
 1. Requisitos: Windows 10/11 de 64 bits y el [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-2. Clona el repositorio y abre `VideoGameLibrary.sln` con Visual Studio 2022, o desde consola:
+2. Clona el repositorio y abre `VideoGameLibraryLocal.sln` con Visual Studio 2022, o desde consola:
    ```
-   dotnet run --project VideoGameLibrary.csproj
+   dotnet run --project VideoGameLibraryLocal.csproj
    ```
 3. Al primer arranque la app pedirá crear/elegir un archivo `.db` de prueba y te
    abrirá Ajustes para las claves de API — todas son opcionales, puedes omitirlas
@@ -32,12 +32,12 @@ el build en rojo no se puede fusionar con garantías.
 
 El repositorio incluye un `.editorconfig` en la raíz con la indentación y convenciones
 del proyecto (Visual Studio y VS Code lo aplican automáticamente al escribir o dar
-formato). El CI ejecuta `dotnet format VideoGameLibrary.sln --verify-no-changes` y falla
+formato). El CI ejecuta `dotnet format VideoGameLibraryLocal.sln --verify-no-changes` y falla
 si algo no cumple el `.editorconfig` (imports desordenados, fin de línea, etc.). Antes de
 subir cambios, corrige cualquier aviso en local con:
 
 ```
-dotnet format VideoGameLibrary.sln
+dotnet format VideoGameLibraryLocal.sln
 ```
 
 ## Flujo de ramas
@@ -57,7 +57,7 @@ dotnet format VideoGameLibrary.sln
 
 ## Reportar un bug o proponer una idea
 
-Abre un [issue](https://github.com/Arodriasen/VideoGameLibrary/issues) describiendo
+Abre un [issue](https://github.com/Arodriasen/VideoGameLibraryLocal/issues) describiendo
 qué esperabas que pasara y qué pasó en realidad. Si es un error, adjunta el log
 correspondiente si puedes — se genera en `%AppData%\VideoGameLibrary\logs\` y también
 es visible desde el icono ⚠ de la barra de herramientas dentro de la app.

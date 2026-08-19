@@ -1,8 +1,10 @@
 # Mi Colección de Juegos
 
-![Build](https://github.com/Arodriasen/VideoGameLibrary/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/Arodriasen/VideoGameLibraryLocal/actions/workflows/build.yml/badge.svg)
 
 Aplicación de escritorio para Windows que permite catalogar tu colección personal de videojuegos escaneando el código de barras (UPC/EAN) de la caja. Busca automáticamente título, plataforma, género, año y portada, y guarda todo en una base de datos local (SQLite) en tu propio equipo.
+
+> ¿Buscas la versión con la colección en la nube (para varios dispositivos, incluido móvil)? Está en [VideoGameLibrary](https://github.com/Arodriasen/VideoGameLibrary).
 
 ## Características
 
@@ -28,7 +30,7 @@ Aplicación de escritorio para Windows que permite catalogar tu colección perso
 
 ## Descargar
 
-Si solo quieres usar la app (sin tocar el código), descarga el `.exe` ya compilado desde la [última release](https://github.com/Arodriasen/VideoGameLibrary/releases/latest). No necesita instalación ni tener .NET instalado.
+Si solo quieres usar la app (sin tocar el código), descarga el `.exe` ya compilado desde la [última release](https://github.com/Arodriasen/VideoGameLibraryLocal/releases/latest). No necesita instalación ni tener .NET instalado.
 
 La propia app te avisará dentro de la interfaz cuando salga una versión más nueva, con un acceso directo para descargarla.
 
@@ -39,15 +41,15 @@ Si prefieres compilarlo tú mismo desde el código fuente:
 1. Clona el repositorio.
 2. Para probarlo directamente sin generar un ejecutable:
    ```
-   dotnet run --project VideoGameLibrary.csproj
+   dotnet run --project VideoGameLibraryLocal.csproj
    ```
 3. Para generar un `.exe` autocontenido (no necesita tener .NET instalado en el equipo donde se ejecute):
    ```
-   dotnet publish VideoGameLibrary.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+   dotnet publish VideoGameLibraryLocal.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
    ```
-   El ejecutable quedará en la carpeta `publish\VideoGameLibrary.exe`.
+   El ejecutable quedará en la carpeta `publish\VideoGameLibraryLocal.exe`.
 
-También puedes abrir `VideoGameLibrary.sln` directamente con Visual Studio 2022.
+También puedes abrir `VideoGameLibraryLocal.sln` directamente con Visual Studio 2022.
 
 > **Nota:** al no estar firmado digitalmente, Windows SmartScreen puede mostrar un aviso la primera vez que ejecutes el `.exe` ("Más información" → "Ejecutar de todas formas").
 

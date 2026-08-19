@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameLibrary", "VideoGameLibrary.csproj", "{A3E5C9F1-6B2D-4A8E-9C7F-1D4E8B2A5F3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameLibraryLocal", "VideoGameLibraryLocal.csproj", "{A3E5C9F1-6B2D-4A8E-9C7F-1D4E8B2A5F3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameLibrary.Tests", "VideoGameLibrary.Tests\VideoGameLibrary.Tests.csproj", "{EB6D4F1B-292C-4C31-8DB6-FFD5B50EB95E}"
 EndProject
