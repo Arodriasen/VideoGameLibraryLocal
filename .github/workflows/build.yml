@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ master, features/** ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    # WPF (net8.0-windows) solo compila en un runner Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependencias
+        run: dotnet restore VideoGameLibrary.sln
+
+      - name: Verificar formato (.editorconfig)
+        run: dotnet format VideoGameLibrary.sln --verify-no-changes
+
+      - name: Compilar (Release)
+        run: dotnet build VideoGameLibrary.sln -c Release --no-restore
+
+      - name: Ejecutar tests
+        run: dotnet test VideoGameLibrary.Tests\VideoGameLibrary.Tests.csproj -c Release --no-build

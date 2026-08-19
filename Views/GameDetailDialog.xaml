@@ -1,0 +1,127 @@
+<Window x:Class="VideoGameLibrary.Views.GameDetailDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:conv="clr-namespace:VideoGameLibrary.Converters"
+        Title="{Binding Title}" Width="420" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Window.Resources>
+        <conv:ByteArrayToImageConverter x:Key="ByteToImg"/>
+        <conv:NullToVisibilityConverter x:Key="NullToVis"/>
+        <conv:RatingToStarKindConverter x:Key="RatingToStar"/>
+        <conv:BoolToYesNoConverter x:Key="PlayedToText"/>
+        <conv:IntZeroToVisibilityConverter x:Key="ZeroToVis"/>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <!-- Portada grande -->
+                <Border Width="260" Height="360" CornerRadius="6"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1"
+                        Background="{DynamicResource MaterialDesignChipBackground}"
+                        HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <Grid>
+                        <Image Source="{Binding CoverData, Converter={StaticResource ByteToImg}}"
+                               Stretch="UniformToFill"
+                               Visibility="{Binding CoverData, Converter={StaticResource NullToVis}}"/>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Visibility="{Binding CoverData, Converter={StaticResource NullToVis}, ConverterParameter=invert}">
+                            <md:PackIcon Kind="GamepadVariant" Width="60" Height="60"
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Text="Sin portada" FontSize="12" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Medium"
+                           TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <md:PackIcon Width="18" Height="18" Margin="1,0" Foreground="#FFC107"
+                                 Kind="{Binding Rating, Converter={StaticResource RatingToStar}, ConverterParameter=1}"/>
+                    <md:PackIcon Width="18" Height="18" Margin="1,0" Foreground="#FFC107"
+                                 Kind="{Binding Rating, Converter={StaticResource RatingToStar}, ConverterParameter=2}"/>
+                    <md:PackIcon Width="18" Height="18" Margin="1,0" Foreground="#FFC107"
+                                 Kind="{Binding Rating, Converter={StaticResource RatingToStar}, ConverterParameter=3}"/>
+                    <md:PackIcon Width="18" Height="18" Margin="1,0" Foreground="#FFC107"
+                                 Kind="{Binding Rating, Converter={StaticResource RatingToStar}, ConverterParameter=4}"/>
+                    <md:PackIcon Width="18" Height="18" Margin="1,0" Foreground="#FFC107"
+                                 Kind="{Binding Rating, Converter={StaticResource RatingToStar}, ConverterParameter=5}"/>
+                </StackPanel>
+
+                <!-- Ficha -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Plataforma" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Platform}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Editorial" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Publisher}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Género" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Genre}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Año" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Year}" Margin="0,0,0,8"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Código de barras" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Barcode}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Jugado" FontWeight="Medium" Margin="0,0,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Played, Converter={StaticResource PlayedToText}}" Margin="0,0,0,8"/>
+
+                    <ItemsControl Grid.Row="6" Grid.Column="1" Margin="0,0,0,8" ItemsSource="{Binding TagList}"
+                                  Visibility="{Binding TagList.Count, Converter={StaticResource ZeroToVis}, ConverterParameter=invert}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,6" VerticalAlignment="Center">
+                                    <md:PackIcon Kind="Tag" Width="14" Height="14" VerticalAlignment="Center"
+                                                 Foreground="{DynamicResource MaterialDesign.Brush.Primary}"/>
+                                    <TextBlock Text="{Binding}" FontSize="12" Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <StackPanel Margin="0,8,0,0">
+                    <TextBlock Text="Notas" FontWeight="Medium" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding Notes}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="CERRAR" Click="BtnClose_Click"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    IsCancel="True" md:ButtonAssist.CornerRadius="4"/>
+        </StackPanel>
+    </Grid>
+</Window>
