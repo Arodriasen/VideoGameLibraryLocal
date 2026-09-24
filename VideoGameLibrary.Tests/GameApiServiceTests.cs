@@ -1,4 +1,4 @@
-using VideoGameLibrary.Services;
+using VideoGameLibrary.Application.Games;
 
 namespace VideoGameLibrary.Tests
 {
@@ -11,13 +11,13 @@ namespace VideoGameLibrary.Tests
         [InlineData("", "")]
         public void NormalizeBarcode_deja_solo_digitos(string raw, string esperado)
         {
-            Assert.Equal(esperado, GameApiService.NormalizeBarcode(raw));
+            Assert.Equal(esperado, BarcodeUtils.NormalizeBarcode(raw));
         }
 
         [Fact]
         public void GetBarcodeVariants_UPC_A_de_12_digitos_añade_variante_EAN_13_con_cero_delante()
         {
-            var variants = GameApiService.GetBarcodeVariants("012345678905");
+            var variants = BarcodeUtils.GetBarcodeVariants("012345678905");
 
             Assert.Equal(new[] { "012345678905", "0012345678905" }, variants);
         }
@@ -25,7 +25,7 @@ namespace VideoGameLibrary.Tests
         [Fact]
         public void GetBarcodeVariants_EAN_13_con_cero_inicial_añade_variante_UPC_A_de_12_digitos()
         {
-            var variants = GameApiService.GetBarcodeVariants("0012345678905");
+            var variants = BarcodeUtils.GetBarcodeVariants("0012345678905");
 
             Assert.Equal(new[] { "0012345678905", "012345678905" }, variants);
         }
@@ -33,7 +33,7 @@ namespace VideoGameLibrary.Tests
         [Fact]
         public void GetBarcodeVariants_EAN_13_sin_cero_inicial_no_añade_variantes()
         {
-            var variants = GameApiService.GetBarcodeVariants("1234567890128");
+            var variants = BarcodeUtils.GetBarcodeVariants("1234567890128");
 
             Assert.Equal(new[] { "1234567890128" }, variants);
         }
@@ -41,7 +41,7 @@ namespace VideoGameLibrary.Tests
         [Fact]
         public void GetBarcodeVariants_longitud_no_estandar_no_añade_variantes()
         {
-            var variants = GameApiService.GetBarcodeVariants("12345");
+            var variants = BarcodeUtils.GetBarcodeVariants("12345");
 
             Assert.Equal(new[] { "12345" }, variants);
         }
@@ -54,14 +54,14 @@ namespace VideoGameLibrary.Tests
         [InlineData("Año 1899, demasiado antiguo", null)] // fuera de rango (< 1970)
         public void ExtractYear_encuentra_el_primer_año_valido_de_4_digitos(string texto, int? esperado)
         {
-            Assert.Equal(esperado, GameApiService.ExtractYear(texto));
+            Assert.Equal(esperado, BarcodeUtils.ExtractYear(texto));
         }
 
         [Fact]
         public void ExtractYear_no_acepta_años_futuros_mas_alla_del_proximo_año()
         {
             var futuro = DateTime.Now.Year + 5;
-            Assert.Null(GameApiService.ExtractYear($"Previsto para {futuro}"));
+            Assert.Null(BarcodeUtils.ExtractYear($"Previsto para {futuro}"));
         }
     }
 }

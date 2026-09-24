@@ -1,4 +1,4 @@
-using VideoGameLibrary.ViewModels;
+using VideoGameLibrary.Presentation.ViewModels;
 
 namespace VideoGameLibrary.Tests
 {

@@ -18,6 +18,7 @@ Aplicación de escritorio para Windows que permite catalogar tu colección perso
 - Estadísticas de la colección (icono de gráfico en la barra inferior): totales, por plataforma, por género, por etiqueta y progreso de altas por año. La ventana se puede redimensionar.
 - Importación desde Excel/CSV (columnas identificadas por nombre, no por posición), con vista previa antes de importar que avisa de duplicados. Exportación de la colección a Excel (.xlsx) o CSV.
 - Copia de seguridad de la base de datos con un clic desde Ajustes, mantenimiento (compactar/VACUUM) y un detector de posibles duplicados en la colección.
+- Calendario de próximos lanzamientos: consulta las novedades de IGDB por día, filtrando por las plataformas que ya tienes en tu colección (o cualquier otra), y añade o quita un lanzamiento de tu lista de deseos o de la colección directamente desde el propio calendario.
 - Tema claro/oscuro.
 - Registro de errores dentro de la app (icono ⚠ en la barra de herramientas) para diagnosticar problemas sin depurador.
 - Aviso automático dentro de la app cuando hay una versión más nueva disponible en GitHub, con acceso directo a la descarga.

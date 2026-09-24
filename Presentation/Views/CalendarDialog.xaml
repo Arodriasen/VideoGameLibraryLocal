@@ -1,0 +1,253 @@
+<Window x:Class="VideoGameLibrary.Presentation.Views.CalendarDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:conv="clr-namespace:VideoGameLibrary.Presentation.Converters"
+        Title="Próximos lanzamientos" Height="900" Width="720"
+        MinHeight="760" MinWidth="620"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:IntZeroToVisibilityConverter x:Key="ZeroToVis"/>
+        <conv:NullToVisibilityConverter x:Key="NullToVis"/>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Cabecera -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+            <md:PackIcon Kind="CalendarMonthOutline" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="Próximos lanzamientos" FontSize="18" FontWeight="Medium" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Navegación de mes + filtro de plataformas -->
+        <Grid Grid.Row="1" Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Style="{StaticResource MaterialDesignIconButton}" Command="{Binding PrevMonthCommand}" ToolTip="Mes anterior">
+                <md:PackIcon Kind="ChevronLeft"/>
+            </Button>
+
+            <TextBlock Grid.Column="1" Text="{Binding MonthLabel}" FontSize="16" FontWeight="Medium"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}" Command="{Binding NextMonthCommand}" ToolTip="Mes siguiente">
+                <md:PackIcon Kind="ChevronRight"/>
+            </Button>
+
+            <md:PopupBox Grid.Column="3" StaysOpen="True" PlacementMode="BottomAndAlignRightEdges" ToolTip="Filtrar por plataforma"
+                          Visibility="{Binding PlatformFilters.Count, Converter={StaticResource ZeroToVis}, ConverterParameter=invert}">
+                <md:PopupBox.ToggleContent>
+                    <md:PackIcon Kind="FilterVariant" Width="22" Height="22"/>
+                </md:PopupBox.ToggleContent>
+                <StackPanel Width="220" Margin="12">
+                    <TextBlock Text="Plataforma" FontWeight="Medium" FontSize="11"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,4"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="340">
+                        <ItemsControl ItemsSource="{Binding PlatformFilters}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding Value}" IsChecked="{Binding IsSelected}" Margin="0,2"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </md:PopupBox>
+        </Grid>
+
+        <ProgressBar Grid.Row="2" IsIndeterminate="True" Height="3" Margin="0,8"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+
+        <!-- Cabecera de días de la semana -->
+        <UniformGrid Grid.Row="3" Columns="7" Margin="0,8,0,4"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+            <TextBlock Text="L" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="M" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="X" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="J" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="V" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="S" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            <TextBlock Text="D" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+        </UniformGrid>
+
+        <!-- Cuadrícula del mes -->
+        <ItemsControl Grid.Row="4" ItemsSource="{Binding Days}"
+                      Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="7"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="66" Margin="2" CornerRadius="6" Cursor="Hand"
+                            MouseLeftButtonUp="DayCell_Click">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource MaterialDesign.Brush.Primary}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding DayNumber}" HorizontalAlignment="Center" FontSize="13">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrentMonth}" Value="False">
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Opacity" Value="1"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Ellipse Width="5" Height="5" Margin="0,2,0,0"
+                                     Visibility="{Binding ReleaseCount, Converter={StaticResource ZeroToVis}, ConverterParameter=invert}">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource MaterialDesign.Brush.Primary}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Fill" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Detalle del día seleccionado -->
+        <ScrollViewer Grid.Row="5" Margin="0,16,0,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Selecciona un día para ver sus lanzamientos" FontStyle="Italic" FontSize="12"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Visibility="{Binding SelectedDay, Converter={StaticResource NullToVis}, ConverterParameter=invert}"/>
+
+                <TextBlock Text="No hay lanzamientos conocidos este día." FontStyle="Italic" FontSize="12"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Visibility="{Binding SelectedDay.ReleaseCount, Converter={StaticResource ZeroToVis}, FallbackValue=Collapsed}"/>
+
+                <ItemsControl ItemsSource="{Binding SelectedDay.Releases}" Margin="0,0,8,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Width="60" Height="80" CornerRadius="4" ClipToBounds="True"
+                                        Background="{DynamicResource MaterialDesignDivider}">
+                                    <Image Source="{Binding CoverUrl}" Stretch="UniformToFill"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,10,0">
+                                    <TextBlock Text="{Binding Title}" FontWeight="Medium" FontSize="15" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding PlatformName}" FontSize="12" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Tag="{Binding}" Click="BtnToggleWishlist_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+                                                <Setter Property="ToolTip" Value="Añadir a la lista de deseos"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsInWishlist}" Value="True">
+                                                        <Setter Property="ToolTip" Value="Quitar de la lista de deseos"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <md:PackIcon Width="20" Height="20" Foreground="{DynamicResource MaterialDesign.Brush.Primary}">
+                                            <md:PackIcon.Style>
+                                                <Style TargetType="md:PackIcon">
+                                                    <Setter Property="Kind" Value="HeartOutline"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsInWishlist}" Value="True">
+                                                            <Setter Property="Kind" Value="Heart"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </md:PackIcon.Style>
+                                        </md:PackIcon>
+                                    </Button>
+                                    <Button Tag="{Binding}" Click="BtnToggleCollection_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+                                                <Setter Property="ToolTip" Value="Añadir a la colección"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsInCollection}" Value="True">
+                                                        <Setter Property="ToolTip" Value="Quitar de la colección"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <md:PackIcon Width="20" Height="20" Foreground="{DynamicResource MaterialDesign.Brush.Primary}">
+                                            <md:PackIcon.Style>
+                                                <Style TargetType="md:PackIcon">
+                                                    <Setter Property="Kind" Value="CartPlus"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsInCollection}" Value="True">
+                                                            <Setter Property="Kind" Value="CartCheck"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </md:PackIcon.Style>
+                                        </md:PackIcon>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Botones -->
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="CERRAR" Click="BtnClose_Click" IsCancel="True"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    md:ButtonAssist.CornerRadius="4"/>
+        </StackPanel>
+
+        <!-- Snackbar de confirmación al añadir a favoritos/colección -->
+        <md:Snackbar Grid.Row="0" Grid.RowSpan="7" MessageQueue="{Binding SnackbarMessageQueue}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+    </Grid>
+</Window>

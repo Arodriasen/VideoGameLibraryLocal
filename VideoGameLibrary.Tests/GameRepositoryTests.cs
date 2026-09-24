@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using VideoGameLibrary.Data;
-using VideoGameLibrary.Models;
-using VideoGameLibrary.Services;
+using VideoGameLibrary.Domain.Entities;
+using VideoGameLibrary.Domain.Repositories;
+using VideoGameLibrary.Infrastructure.Persistence;
 
 namespace VideoGameLibrary.Tests
 {
@@ -121,7 +121,7 @@ namespace VideoGameLibrary.Tests
 
             // Simula que "Antiguo" lleva más días en la papelera que el periodo de retención
             var antiguo = await _db.Games.FindAsync(antiguoId);
-            antiguo!.DeletedDate = DateTime.Now.AddDays(-(GameRepository.TrashRetentionDays + 1));
+            antiguo!.DeletedDate = DateTime.Now.AddDays(-(IGameRepository.TrashRetentionDays + 1));
             await _db.SaveChangesAsync();
 
             var purged = await _repo.PurgeExpiredTrashAsync();
@@ -178,6 +178,33 @@ namespace VideoGameLibrary.Tests
             Assert.Equal(2, added);
             Assert.Equal(1, duplicates);
             Assert.Equal(3, (await _repo.GetAllAsync()).Count); // 1 original + 2 nuevos
+        }
+
+        // Comprobación empírica de que SQLite permite varias filas NULL en un índice único
+        // (a diferencia de SQL Server, que solo permite una) -- ver GameDbContext.
+        [Fact]
+        public async Task AddAsync_permite_varios_juegos_sin_codigo_de_barras()
+        {
+            await _repo.AddAsync(NewGame("Juego sin barcode 1", barcode: null));
+            await _repo.AddAsync(NewGame("Juego sin barcode 2", barcode: null));
+
+            var all = await _repo.GetAllAsync();
+            Assert.Equal(2, all.Count);
+        }
+
+        // El índice único de Barcode está filtrado a juegos activos (ver GameDbContext): un juego
+        // en la papelera no debe impedir volver a escanear y añadir el mismo código de barras.
+        [Fact]
+        public async Task AddAsync_permite_reusar_el_barcode_de_un_juego_en_la_papelera()
+        {
+            var original = NewGame("Zelda", barcode: "111");
+            await _repo.AddAsync(original);
+            await _repo.DeleteAsync(original.Id);
+
+            await _repo.AddAsync(NewGame("Zelda", barcode: "111"));
+
+            Assert.Single(await _repo.GetAllAsync());
+            Assert.Single(await _repo.GetTrashAsync());
         }
 
         [Fact]

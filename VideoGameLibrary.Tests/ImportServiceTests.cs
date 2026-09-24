@@ -1,5 +1,6 @@
-using VideoGameLibrary.Models;
-using VideoGameLibrary.Services;
+using VideoGameLibrary.Application.Import;
+using VideoGameLibrary.Domain.Entities;
+using VideoGameLibrary.Infrastructure.Files;
 
 namespace VideoGameLibrary.Tests
 {
@@ -14,7 +15,7 @@ namespace VideoGameLibrary.Tests
             var parsed = new List<Game> { NewGame("Un juego nuevo", barcode: "1234567890123") };
             var existing = new List<Game>();
 
-            var result = ImportService.BuildPreview(parsed, existing);
+            var result = ImportPreviewBuilder.BuildPreview(parsed, existing);
 
             Assert.Single(result);
             Assert.Equal(ImportItemStatus.Nuevo, result[0].Status);
@@ -26,7 +27,7 @@ namespace VideoGameLibrary.Tests
             var parsed = new List<Game> { NewGame("Zelda", barcode: "1234567890123") };
             var existing = new List<Game> { NewGame("Zelda (ya en mi colección)", barcode: "1234567890123") };
 
-            var result = ImportService.BuildPreview(parsed, existing);
+            var result = ImportPreviewBuilder.BuildPreview(parsed, existing);
 
             Assert.Equal(ImportItemStatus.YaExiste, result[0].Status);
         }
@@ -37,7 +38,7 @@ namespace VideoGameLibrary.Tests
             var parsed = new List<Game> { NewGame("Mario Kart 8", "Nintendo Switch") };
             var existing = new List<Game> { NewGame("mario kart 8", "nintendo switch") }; // mayúsculas/espacios distintos
 
-            var result = ImportService.BuildPreview(parsed, existing);
+            var result = ImportPreviewBuilder.BuildPreview(parsed, existing);
 
             Assert.Equal(ImportItemStatus.YaExiste, result[0].Status);
         }
@@ -48,7 +49,7 @@ namespace VideoGameLibrary.Tests
             var parsed = new List<Game> { NewGame("Hollow Knight", "PC") };
             var existing = new List<Game> { NewGame("Hollow Knight", "Nintendo Switch") };
 
-            var result = ImportService.BuildPreview(parsed, existing);
+            var result = ImportPreviewBuilder.BuildPreview(parsed, existing);
 
             Assert.Equal(ImportItemStatus.Nuevo, result[0].Status);
         }
@@ -62,7 +63,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("Fila 2 (mismo barcode)", barcode: "1111111111111")
             };
 
-            var result = ImportService.BuildPreview(parsed, new List<Game>());
+            var result = ImportPreviewBuilder.BuildPreview(parsed, new List<Game>());
 
             Assert.Equal(ImportItemStatus.Nuevo, result[0].Status);
             Assert.Equal(ImportItemStatus.DuplicadoEnArchivo, result[1].Status);
@@ -77,7 +78,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("Celeste", "PC")
             };
 
-            var result = ImportService.BuildPreview(parsed, new List<Game>());
+            var result = ImportPreviewBuilder.BuildPreview(parsed, new List<Game>());
 
             Assert.Equal(ImportItemStatus.Nuevo, result[0].Status);
             Assert.Equal(ImportItemStatus.DuplicadoEnArchivo, result[1].Status);
@@ -93,7 +94,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("C", barcode: "333")
             };
 
-            var result = ImportService.BuildPreview(parsed, new List<Game>());
+            var result = ImportPreviewBuilder.BuildPreview(parsed, new List<Game>());
 
             Assert.Equal(new[] { "A", "B", "C" }, result.Select(r => r.Game.Title));
         }
@@ -117,7 +118,7 @@ namespace VideoGameLibrary.Tests
         {
             var games = new List<Game> { NewGame("A", barcode: "111"), NewGame("B", barcode: "222") };
 
-            Assert.Empty(ImportService.FindDuplicateGroups(games));
+            Assert.Empty(ImportPreviewBuilder.FindDuplicateGroups(games));
         }
 
         [Fact]
@@ -127,7 +128,7 @@ namespace VideoGameLibrary.Tests
             games[0].Barcode = "1234567890123";
             games[1].Barcode = "1234567890123";
 
-            var groups = ImportService.FindDuplicateGroups(games);
+            var groups = ImportPreviewBuilder.FindDuplicateGroups(games);
 
             Assert.Single(groups);
             Assert.Equal(2, groups[0].Count);
@@ -142,7 +143,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("Mario Kart 8", barcode: "0012345678905") // EAN-13 con "0" inicial
             };
 
-            var groups = ImportService.FindDuplicateGroups(games);
+            var groups = ImportPreviewBuilder.FindDuplicateGroups(games);
 
             Assert.Single(groups);
         }
@@ -156,7 +157,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("celeste", "pc") // mayúsculas/espacios distintos
             };
 
-            var groups = ImportService.FindDuplicateGroups(games);
+            var groups = ImportPreviewBuilder.FindDuplicateGroups(games);
 
             Assert.Single(groups);
         }
@@ -166,7 +167,7 @@ namespace VideoGameLibrary.Tests
         {
             var games = new List<Game> { NewGame("Hollow Knight", "PC"), NewGame("Hollow Knight", "Nintendo Switch") };
 
-            Assert.Empty(ImportService.FindDuplicateGroups(games));
+            Assert.Empty(ImportPreviewBuilder.FindDuplicateGroups(games));
         }
 
         [Fact]
@@ -178,7 +179,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("Celeste", "PC", isWishlist: true)
             };
 
-            Assert.Empty(ImportService.FindDuplicateGroups(games));
+            Assert.Empty(ImportPreviewBuilder.FindDuplicateGroups(games));
         }
 
         [Fact]
@@ -191,7 +192,7 @@ namespace VideoGameLibrary.Tests
                 NewGame("Celeste", "PC", addedDate: new DateTime(2025, 6, 1))
             };
 
-            var group = Assert.Single(ImportService.FindDuplicateGroups(games));
+            var group = Assert.Single(ImportPreviewBuilder.FindDuplicateGroups(games));
 
             Assert.Equal(new DateTime(2025, 1, 1), group[0].AddedDate);
             Assert.Equal(new DateTime(2025, 6, 1), group[1].AddedDate);

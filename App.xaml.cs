@@ -8,17 +8,29 @@ using System.Windows;
 using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
-using VideoGameLibrary.Data;
-using VideoGameLibrary.Services;
-using VideoGameLibrary.ViewModels;
+using VideoGameLibrary.Application.Abstractions;
+using VideoGameLibrary.Domain.Repositories;
+using VideoGameLibrary.Infrastructure.ExternalApis;
+using VideoGameLibrary.Infrastructure.Logging;
+using VideoGameLibrary.Infrastructure.Persistence;
+using VideoGameLibrary.Presentation.Services;
+using VideoGameLibrary.Presentation.ViewModels;
+using VideoGameLibrary.Presentation.Views;
 
 namespace VideoGameLibrary
 {
-    public partial class App : Application
+    // Composition root: el único sitio del proyecto que conoce las cuatro capas a la vez y las
+    // conecta. Domain/Application no dependen de nada de aquí; Infrastructure implementa las
+    // interfaces de Application; Presentation solo ve esas interfaces (vía las propiedades
+    // estáticas de abajo), nunca los tipos concretos de Infrastructure.
+    public partial class App : System.Windows.Application
     {
-        public static GameRepository Repository { get; private set; } = null!;
-        private static GameApiService _apiService = null!;
-        public static GameApiService ApiService => _apiService;
+        public static IGameRepository Repository { get; private set; } = null!;
+        private static IGameApiService _apiService = null!;
+        public static IGameApiService ApiService => _apiService;
+        public static IAppDialogService DialogService { get; } = new AppDialogService();
+        public static IImportService ImportService { get; } = new Infrastructure.Files.ImportService();
+        public static IExportService ExportService { get; } = new Infrastructure.Files.ExportService();
         public static bool IsDarkTheme { get; private set; }
         public static string CurrentDatabasePath { get; private set; } = string.Empty;
 
@@ -70,7 +82,7 @@ namespace VideoGameLibrary
                     string.IsNullOrEmpty(config.IgdbClientSecret) && string.IsNullOrEmpty(config.RawgApiKey) &&
                     string.IsNullOrEmpty(config.TheGamesDbApiKey))
                 {
-                    new Views.SettingsDialog(firstRun: true).ShowDialog();
+                    new SettingsDialog(firstRun: true).ShowDialog();
                     config = LoadConfig();
                 }
 
@@ -95,6 +107,15 @@ namespace VideoGameLibrary
 
                 var mainVm = new MainViewModel(Repository, _apiService);
                 var mainWindow = new MainWindow(mainVm);
+
+                // App.xaml usa ShutdownMode="OnExplicitShutdown" para que cerrar el diálogo de
+                // Ajustes del primer arranque (única ventana abierta en ese momento) no cierre la
+                // app entera antes de llegar aquí (era exactamente lo que pasaba con el valor por
+                // defecto OnLastWindowClose). A partir de aquí, MainWindow pasa a comportarse como
+                // siempre: cerrarla cierra la app.
+                MainWindow = mainWindow;
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
+
                 mainWindow.Show();
 
                 _ = CheckForUpdatesAsync(mainVm);
@@ -111,7 +132,7 @@ namespace VideoGameLibrary
 
         private static async Task CheckForUpdatesAsync(MainViewModel mainVm)
         {
-            var update = await UpdateCheckService.CheckForUpdateAsync();
+            var update = await new UpdateCheckService().CheckForUpdateAsync();
             if (update == null) return;
 
             mainVm.SnackbarMessageQueue.Enqueue(

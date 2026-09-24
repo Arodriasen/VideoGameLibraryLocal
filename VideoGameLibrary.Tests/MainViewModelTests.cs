@@ -1,7 +1,7 @@
-using VideoGameLibrary.Data;
-using VideoGameLibrary.Models;
-using VideoGameLibrary.Services;
-using VideoGameLibrary.ViewModels;
+using VideoGameLibrary.Domain.Entities;
+using VideoGameLibrary.Infrastructure.ExternalApis;
+using VideoGameLibrary.Infrastructure.Persistence;
+using VideoGameLibrary.Presentation.ViewModels;
 using Xunit;
 
 namespace VideoGameLibrary.Tests
