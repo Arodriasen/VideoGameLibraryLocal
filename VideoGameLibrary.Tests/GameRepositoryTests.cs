@@ -207,6 +207,22 @@ namespace VideoGameLibrary.Tests
             Assert.Single(await _repo.GetTrashAsync());
         }
 
+        // Varias ventanas comparten el mismo repositorio (p. ej. abrir el calendario mientras la
+        // lista principal aún carga): las operaciones simultáneas deben esperar su turno en vez de
+        // fallar con "A second operation was started on this context instance".
+        [Fact]
+        public async Task Operaciones_simultaneas_no_fallan_por_compartir_el_DbContext()
+        {
+            await _repo.AddAsync(NewGame("Zelda", barcode: "111"));
+
+            var tasks = Enumerable.Range(0, 10)
+                .Select(i => i % 2 == 0 ? (Task)_repo.GetAllAsync() : _repo.GetCollectionNameAsync())
+                .ToList();
+            await Task.WhenAll(tasks);
+
+            Assert.Single(await _repo.GetAllAsync());
+        }
+
         [Fact]
         public async Task GetCollectionNameAsync_y_SetCollectionNameAsync_persisten_el_nombre()
         {

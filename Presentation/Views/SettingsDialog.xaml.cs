@@ -158,7 +158,7 @@ namespace VideoGameLibrary.Presentation.Views
                 // VACUUM INTO exige que el archivo destino no exista todavía; SaveFileDialog ya
                 // confirmó con el usuario si quería sobrescribir, así que aquí solo se aplica.
                 if (File.Exists(dlg.FileName)) File.Delete(dlg.FileName);
-                App.Repository.BackupTo(dlg.FileName);
+                await App.Repository.BackupToAsync(dlg.FileName);
 
                 var now = DateTime.UtcNow;
                 App.SaveLastBackupDate(now);
@@ -177,7 +177,7 @@ namespace VideoGameLibrary.Presentation.Views
         {
             try
             {
-                App.Repository.Vacuum();
+                await App.Repository.VacuumAsync();
                 await App.DialogService.ShowInfoAsync("SettingsDialogHost", "Base de datos compactada correctamente.", "Compactar base de datos");
             }
             catch (Exception ex)

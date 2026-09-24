@@ -26,7 +26,7 @@ namespace VideoGameLibrary.Domain.Repositories
         Task<(int Added, int Duplicates)> ImportAsync(IEnumerable<Game> games);
 
         // Mantenimiento del archivo .db (ver Ajustes): compactar y copia de seguridad.
-        void Vacuum();
-        void BackupTo(string destinationPath);
+        Task VacuumAsync();
+        Task BackupToAsync(string destinationPath);
     }
 }
