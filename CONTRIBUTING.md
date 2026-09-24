@@ -59,5 +59,5 @@ dotnet format VideoGameLibraryLocal.sln
 
 Abre un [issue](https://github.com/Arodriasen/VideoGameLibraryLocal/issues) describiendo
 qué esperabas que pasara y qué pasó en realidad. Si es un error, adjunta el log
-correspondiente si puedes — se genera en `%AppData%\VideoGameLibrary\logs\` y también
+correspondiente si puedes — se genera en `%AppData%\VideoGameLibraryLocal\logs\` y también
 es visible desde el icono ⚠ de la barra de herramientas dentro de la app.

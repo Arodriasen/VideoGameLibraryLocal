@@ -69,7 +69,7 @@ La app funciona sin ninguna clave: el escaneo usará únicamente UPCitemdb, que 
 | [RAWG](https://rawg.io/apidocs) | Enriquecimiento por nombre, segunda fuente | Clave gratuita en rawg.io |
 | [TheGamesDB](https://thegamesdb.net/) | Portada como último recurso | Clave gratuita solicitándola en su foro |
 
-Ninguna clave se sube a ningún sitio: se guardan solo en tu equipo, en `%AppData%\VideoGameLibrary\config.json`, cifradas con la protección de datos de Windows (DPAPI) ligada a tu usuario. Solo se pueden descifrar iniciando sesión con ese mismo usuario de Windows en este equipo; si compartes el equipo pero cada persona tiene su propia cuenta de Windows, las claves de una no son legibles desde la otra.
+Ninguna clave se sube a ningún sitio: se guardan solo en tu equipo, en `%AppData%\VideoGameLibraryLocal\config.json`, cifradas con la protección de datos de Windows (DPAPI) ligada a tu usuario. Solo se pueden descifrar iniciando sesión con ese mismo usuario de Windows en este equipo; si compartes el equipo pero cada persona tiene su propia cuenta de Windows, las claves de una no son legibles desde la otra.
 
 ## Tecnologías
 

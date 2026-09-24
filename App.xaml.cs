@@ -34,9 +34,14 @@ namespace VideoGameLibrary
         public static bool IsDarkTheme { get; private set; }
         public static string CurrentDatabasePath { get; private set; } = string.Empty;
 
+        // Carpeta propia, distinta de la de VideoGameLibrary (versión Neon): antes compartían
+        // config.json y, como cada app solo escribe sus propios campos, al guardar se borraban
+        // los ajustes de la otra (ruta del .db y fecha de copia aquí, cadena de conexión allí).
         private static readonly string ConfigFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoGameLibrary");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoGameLibraryLocal");
         private static readonly string ConfigFile = Path.Combine(ConfigFolder, "config.json");
+        private static readonly string LegacyConfigFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoGameLibrary", "config.json");
 
         public App()
         {
@@ -73,6 +78,7 @@ namespace VideoGameLibrary
             try
             {
                 LoggingService.PurgeOldLogs();
+                MigrateLegacyConfig();
 
                 var config = LoadConfig();
                 IsDarkTheme = config.DarkTheme;
@@ -237,6 +243,23 @@ namespace VideoGameLibrary
                 SaveLastPath(dlg.FileName);
                 return dlg.FileName;
             }
+        }
+
+        // Primer arranque tras separar la carpeta de configuración: copia el config.json de la
+        // carpeta compartida para no perder claves de API, tema ni la ruta del .db. Se copia tal
+        // cual (los valores DPAPI siguen siendo válidos para el mismo usuario de Windows); si
+        // trae campos de la versión Neon, se ignoran al leer y desaparecen en el siguiente
+        // guardado. El original no se toca, porque la versión Neon lo sigue usando.
+        private static void MigrateLegacyConfig()
+        {
+            try
+            {
+                if (File.Exists(ConfigFile) || !File.Exists(LegacyConfigFile)) return;
+
+                Directory.CreateDirectory(ConfigFolder);
+                File.Copy(LegacyConfigFile, ConfigFile);
+            }
+            catch (Exception ex) { LoggingService.LogError("Copiar la configuración de la carpeta anterior", ex); }
         }
 
         public static AppConfig LoadConfig()

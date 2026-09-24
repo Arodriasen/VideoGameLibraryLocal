@@ -8,7 +8,7 @@ namespace VideoGameLibrary.Infrastructure.Logging
     public static class LoggingService
     {
         private static readonly string LogFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoGameLibrary", "logs");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoGameLibraryLocal", "logs");
         private static readonly object _lock = new object();
         private const string Separator = "--------------------------------------------------------------------------------";
 
